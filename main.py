@@ -1,7 +1,7 @@
 # 작성자 : Redwing
 
 # 실행 파일 생성 명령어 : 콘솔 창에 아래 명령이 입력
-# pyinstaller -F main.py
+# pyinstaller -F -i=redwing.ico -n AutoSaveRestore main.py
 
 import os
 import datetime
