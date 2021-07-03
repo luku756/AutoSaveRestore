@@ -24,7 +24,7 @@ save_file_name = "hardcore.sav"
 backup_file_name = "hardcore_back.sav"
 
 last_save_time = 0
-run_flag = False  # 스레드 반복 플래그
+run_flag = True  # 스레드 반복 플래그
 previous_state = Result.NOFILE  #이전 상태를 저장하는 변수
 
 
@@ -68,6 +68,7 @@ def backup_save_file():
     file_path = os.path.join(route_path, save_file_name)
     backup_path = os.path.join(route_path, backup_file_name)
     shutil.copyfile(file_path, backup_path)
+    print("backup complete.")
 
 
 # 백업된 파일을 복구
@@ -81,6 +82,7 @@ def restore_save_file():
     global last_save_time
     mtime = os.path.getmtime(file_path)
     last_save_time = mtime
+    print("restore complete.")
 
 
 # 작업 함수
@@ -112,6 +114,18 @@ def thread_run():
         threading.Timer(3, thread_run).start()  # 3초 후 다음 작업 시작
 
 
-run_flag = True
+# 세이브 파일이 있는지 확인하고, 없다면 경로 입력받기
+def input_path():
+    global route_path
+    file_path = os.path.join(route_path, save_file_name)
+    if not os.path.exists(file_path):
+        print("{0} 에 세이브 파일(harcore.sav)가 없습니다.".format(route_path))
+        print("다른 경로에 저장되어있다면 해당 경로를 입력해 주세요.")
+        print("아직 하드코어 저장 파일이 생성되지 않았다면, 프로그램을 종료하고 세이브 파일 생성 후 재실행해 주시기 바랍니다.")
+        route_path = input()
+
+
+# 실행 부분
+input_path()
 thread_run()
 
