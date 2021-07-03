@@ -25,6 +25,7 @@ backup_file_name = "hardcore_back.sav"
 
 last_save_time = 0
 run_flag = False  # 스레드 반복 플래그
+previous_state = Result.NOFILE  #이전 상태를 저장하는 변수
 
 
 # 세이브 파일이 변화되었는지 확인하는 함수.
@@ -42,15 +43,20 @@ def check_save_file_update():
             return Result.REMOVED  # 파일이 삭제됨
 
     else:
-        print("save file exist")
         mtime = os.path.getmtime(file_path)
 
         if last_save_time != mtime:
-            print('save file updated. {0} -> {1}'.format(last_save_time, mtime))
+            if last_save_time == 0:  # 초기값
+                print('save file found.')
+
+            else:
+                old_time = datetime.datetime.fromtimestamp(last_save_time)
+                new_time = datetime.datetime.fromtimestamp(mtime)
+                print('save file is updated. {0} -> {1}'.format(old_time, new_time))
 
             last_save_time = mtime
 
-            print(datetime.datetime.fromtimestamp(mtime))
+            # print(datetime.datetime.fromtimestamp(mtime))
             return Result.UPDATE
         else:
             return Result.STAY
@@ -74,8 +80,13 @@ def restore_save_file():
 
 # 작업 함수
 def worker():
+    global previous_state
     res = check_save_file_update()  # 실제 작업 처리 부분
-    print("res : {0}".format(res))
+
+    if res != previous_state:  # 상태에 변화가 일어났을 때에만 로그 출력
+        previous_state = res
+        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print("[{1}] state : {0}".format(res, now))
 
     if res == Result.UPDATE:
         backup_save_file()  # 변경된 파일을 백업.
@@ -93,7 +104,7 @@ def thread_run():
     global run_flag
     if run_flag:  # run_flag 가 true 일 때에만 실행
         worker()  # 실제 작업
-        threading.Timer(2, thread_run).start()  # 3초 후 다음 작업 시작
+        threading.Timer(3, thread_run).start()  # 3초 후 다음 작업 시작
 
 
 run_flag = True
