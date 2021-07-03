@@ -3,6 +3,7 @@
 import os
 import datetime
 import threading
+import shutil
 from enum import Enum
 
 
@@ -15,7 +16,7 @@ class Result(Enum):
 
 
 route_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\LostRuins\\Saves"
-save_file_name = "1.sav"
+save_file_name = "hardcore.sav"
 backup_file_name = "hardcore_back.sav"
 
 last_save_time = 0
@@ -51,14 +52,23 @@ def check_save_file_update():
             return Result.STAY
 
 
+# 세이브 파일을 백업
 def backup_save_file():
     print("backup start.")
+    file_path = os.path.join(route_path, save_file_name)
+    backup_path = os.path.join(route_path, backup_file_name)
+    shutil.copyfile(file_path, backup_path)
 
 
+# 백업된 파일을 복구
 def restore_save_file():
     print("save file restore start.")
+    file_path = os.path.join(route_path, save_file_name)
+    backup_path = os.path.join(route_path, backup_file_name)
+    shutil.copyfile(backup_path, file_path)
 
 
+# 작업 함수
 def worker():
     res = check_save_file_update()  # 실제 작업 처리 부분
     print("res : {0}".format(res))
@@ -78,10 +88,10 @@ def worker():
 def thread_run():
     global run_flag
     if run_flag:  # run_flag 가 true 일 때에만 실행
-        worker() # 실제 작업
+        worker()  # 실제 작업
         threading.Timer(2, thread_run).start()  # 3초 후 다음 작업 시작
 
 
-check_save_file_update()
 run_flag = True
 thread_run()
+
