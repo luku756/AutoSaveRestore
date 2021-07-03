@@ -77,6 +77,11 @@ def restore_save_file():
     backup_path = os.path.join(route_path, backup_file_name)
     shutil.copyfile(backup_path, file_path)
 
+    # 백업 파일을 복구한 시간을 적용
+    global last_save_time
+    mtime = os.path.getmtime(file_path)
+    last_save_time = mtime
+
 
 # 작업 함수
 def worker():
