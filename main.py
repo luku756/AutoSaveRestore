@@ -1,5 +1,8 @@
 # 작성자 : Redwing
 
+# 실행 파일 생성 명령어 : 콘솔 창에 아래 명령이 입력
+# pyinstaller -F main.py
+
 import os
 import datetime
 import threading
@@ -15,6 +18,7 @@ class Result(Enum):
     REMOVED = 3  # 파일이 있었는데 사라짐
 
 
+# 파일 이름 및 경로. 현재는 내 로컬 경로.
 route_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\LostRuins\\Saves"
 save_file_name = "hardcore.sav"
 backup_file_name = "hardcore_back.sav"
